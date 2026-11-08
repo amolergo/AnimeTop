@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru" data-static-demo="true">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b10" />
+    <meta name="description" content="Личный аниме-рейтинг: находите, сравнивайте оценки и сохраняйте то, что хотите посмотреть." />
+    <title>Anime Top — твоя следующая история</title>
+    <link id="site-favicon" rel="icon" type="image/svg+xml" href="./favicon-anime.svg" />
+    <link rel="stylesheet" href="./site.css" />
+    <script type="module" src="./app.js"></script>
+    <script type="module" src="./assistant-ui.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Основная навигация">
+        <div class="universe-switcher" role="group" aria-label="Выбор каталога">
+        <a class="brand" href="?mode=anime#overview" data-universe="anime" aria-label="Anime Top — каталог аниме" aria-current="true">
+          <span class="brand-mark">A<span>✦</span></span>
+          <span class="brand-name">anime<span>top</span><small>СМОТРИ. ЧУВСТВУЙ. ЗАПОМИНАЙ.</small></span>
+        </a>
+        <a class="brand brand-mult" href="?mode=mult#overview" data-universe="mult" aria-label="Mult Top — каталог мультфильмов">
+          <span class="brand-mark">M<span>✦</span></span>
+          <span class="brand-name">mult<span>top</span><small>МИРЫ. ГЕРОИ. ПРИКЛЮЧЕНИЯ.</small></span>
+        </a>
+        </div>
+
+        <div class="sidebar-label">ПРОСТРАНСТВО</div>
+        <nav class="side-nav" aria-label="Разделы">
+          <button type="button" class="nav-link active" data-page="overview"><span class="nav-icon">⌂</span> Обзор <span class="nav-arrow">↗</span></button>
+          <button type="button" class="nav-link" data-page="catalog"><span class="nav-icon">▦</span> Весь каталог <span class="nav-arrow">↗</span></button>
+          <button type="button" class="nav-link" data-page="saved"><span class="nav-icon">♡</span> Мой список <span id="saved-nav-count" class="nav-count">0</span></button>
+          <button type="button" class="nav-link" data-page="ratings"><span class="nav-icon">★</span> Рейтинги <span class="nav-arrow">↗</span></button>
+          <button type="button" class="nav-link" data-page="profile"><span class="nav-icon">◉</span> Профиль <span class="nav-arrow">↗</span></button>
+        </nav>
+
+        <div class="top-actions">
+          <button type="button" class="top-search" id="top-search" aria-label="Найти аниме"><span>⌕</span><span>Поиск</span><kbd>/</kbd></button>
+          <button type="button" id="account-button" class="account-button" aria-label="Войти в профиль"><span id="account-avatar">◉</span><span id="account-label">Войти</span></button>
+        </div>
+
+      </aside>
+
+      <div class="main-wrap">
+        <header class="topbar">
+          <div class="crumb">ANIME TOP <span>/</span> <strong id="current-page-label">Обзор</strong></div>
+        </header>
+
+        <main id="main-content">
+          <section id="overview-page" class="page">
+            <div class="hero" id="hero">
+              <div class="hero-art" id="hero-art"></div>
+              <div class="hero-glow"></div>
+              <div class="hero-visual" aria-hidden="true"><div class="hero-halo"></div><img id="hero-poster" alt="" /><span class="hero-visual-label">A STORY WORTH FEELING</span></div>
+              <div class="hero-copy">
+                <div class="eyebrow"><span class="eyebrow-line"></span> АНИМЕ, КОТОРОЕ ОСТАЁТСЯ С ТОБОЙ</div>
+                <h1>Больше, чем<br /><em>просто смотреть.</em></h1>
+                <p>Открывай истории под своё настроение. Сравнивай впечатления, собирай любимое и продолжай с того места, где остановился.</p>
+                <div class="hero-actions">
+                  <button type="button" class="button button-primary" data-action="browse">Найти свою историю <span>↗</span></button>
+                  <button type="button" class="button button-ghost" id="random-anime">Удиви меня <span>✦</span></button>
+                </div>
+                <div class="hero-scroll"><span></span> ПРОКРУТИ И ОТКРОЙ БОЛЬШЕ</div>
+              </div>
+              <div class="hero-feature" id="hero-feature"></div>
+              <span class="hero-index">ANIME TOP / 001</span>
+            </div>
+
+            <div class="stats-grid" id="stats-grid"></div>
+
+            <section class="content-section picks-section">
+              <div class="section-heading">
+                <div><div class="section-kicker">ВЫБРАНО СО ВКУСОМ</div><h2>Истории, к которым возвращаются.</h2></div>
+                <button type="button" class="text-link" data-action="browse">Смотреть всё <span>↗</span></button>
+              </div>
+              <div class="picks-grid" id="picks-grid"></div>
+            </section>
+
+            <section class="content-section discovery-section">
+              <div class="section-heading">
+                <div><div class="section-kicker">СЕГОДНЯ ТЫ ВЫБИРАЕШЬ</div><h2>Какое у тебя настроение?</h2></div>
+              </div>
+              <div class="genre-tiles" id="genre-tiles"></div>
+            </section>
+
+            <section class="bottom-cta">
+              <div><span class="section-kicker">ТВОЯ КОЛЛЕКЦИЯ, ТВОИ ПРАВИЛА</span><h2>Не теряй то,<br />что тронуло.</h2><p>Сохраняй любимое, оценивай просмотренное и возвращайся к каждой истории в любой момент.</p></div>
+              <button type="button" class="button button-light" data-page="profile">Мой профиль <span>↗</span></button>
+              <span class="cta-kanji" aria-hidden="true">物語</span>
+            </section>
+          </section>
+
+          <section id="catalog-page" class="page hidden">
+            <div class="page-intro"><div class="section-kicker">НАЙДЁТСЯ ЧТО-ТО ТВОЁ</div><h1>Исследуй аниме.</h1><p>Один поиск — тысячи поводов остаться ещё на серию.</p></div>
+            <div class="filter-panel">
+              <label class="search-field"><span>⌕</span><input id="catalog-search" type="search" placeholder="Найти любое аниме..." autocomplete="off" aria-label="Поиск аниме" /><kbd>/</kbd></label>
+              <div class="filter-dropdown genre-dropdown" data-dropdown="genre"><button type="button" class="filter-trigger" data-filter-trigger="genre" aria-expanded="false" aria-controls="genre-menu"><span>ЖАНРЫ И ТЕМЫ</span><strong id="genre-trigger-label">Любые жанры</strong><i>⌄</i></button><div class="filter-menu genre-menu hidden" id="genre-menu"><div class="genre-menu-head"><strong>Что хочется посмотреть?</strong><small>Жанры и поджанры · можно исключать</small></div><input id="genre-search" type="search" placeholder="Комедия, романтика, триллер…" aria-label="Найти жанр или поджанр"><div id="genre-quick" class="genre-quick"></div><div id="genre-options" class="genre-options"></div></div></div>
+              <div class="filter-dropdown" data-dropdown="rating"><button type="button" class="filter-trigger" data-filter-trigger="rating" aria-expanded="false" aria-controls="rating-menu"><span>МОИ ОЦЕНКИ</span><strong id="rating-trigger-label">Все истории</strong><i>⌄</i></button><div class="filter-menu hidden" id="rating-menu"></div></div>
+              <div class="filter-dropdown" data-dropdown="type"><button type="button" class="filter-trigger" data-filter-trigger="type" aria-expanded="false" aria-controls="type-menu"><span>ФОРМАТ</span><strong id="type-trigger-label">Любой формат</strong><i>⌄</i></button><div class="filter-menu hidden" id="type-menu"></div></div>
+              <div class="filter-dropdown sort-field" data-dropdown="sort"><button type="button" class="filter-trigger" data-filter-trigger="sort" aria-expanded="false" aria-controls="sort-menu"><span>СОРТИРОВКА</span><strong id="sort-trigger-label">По Кинопоиску</strong><i>⌄</i></button><div class="filter-menu hidden" id="sort-menu"></div></div>
+            </div>
+            <div id="active-genre-filters" class="active-genre-filters hidden"></div>
+            <p id="catalog-search-status" class="catalog-search-status" aria-live="polite"></p>
+            <div class="catalog-meta"><div><strong id="results-count">0</strong> <span id="results-label">аниме</span><button type="button" id="clear-filters" class="clear-button hidden">Сбросить фильтры ×</button></div><div class="view-switch" role="group" aria-label="Вид каталога"><button type="button" class="active" data-view="grid" aria-label="Плитка" title="Плитка">▦</button><button type="button" data-view="list" aria-label="Список" title="Список">☷</button></div></div>
+            <div id="catalog-grid" class="catalog-grid"></div>
+            <button type="button" id="catalog-more" class="button button-outline catalog-more hidden">Показать ещё <span>↓</span></button>
+            <div id="catalog-empty" class="empty-state hidden"><span>⌕</span><h3>Ничего не нашлось</h3><p>Попробуй другое название или сбрось фильтры.</p><button type="button" class="button button-outline" data-action="clear">Сбросить фильтры ↗</button></div>
+          </section>
+
+          <section id="ratings-page" class="page hidden">
+            <div class="page-intro"><div class="section-kicker">ИСТОРИИ, КОТОРЫЕ ЦЕПЛЯЮТ</div><h1>Рейтинги.</h1><p>Выбери, чей топ смотреть: всего сообщества или только свой.</p></div>
+            <div id="ratings-content" class="ratings-content"></div>
+          </section>
+
+          <section id="recommendations-page" class="page hidden">
+            <div class="page-intro"><div class="section-kicker">ПОД ТВОЁ НАСТРОЕНИЕ</div><h1>Твои рекомендации.</h1><p>Истории, которые могут понравиться именно тебе. Чем больше оценок, тем точнее подборка.</p></div>
+            <div class="recommendations-intro"><span>✦</span><p>Подборка учитывает любимые жанры и высокие оценки Кинопоиска. Уже сохранённые истории не повторяются.</p></div>
+            <div id="recommendations-grid" class="catalog-grid recommendations-grid"></div>
+            <button type="button" id="recommendations-more" class="button button-outline recommendations-more hidden">Показать ещё <span>↓</span></button>
+          </section>
+
+          <section id="saved-page" class="page hidden">
+            <div class="page-intro"><div class="section-kicker">ЛИЧНОЕ ПРОСТРАНСТВО</div><h1>Твой список.</h1><p>Все истории, которые хочется оставить рядом.</p></div>
+            <div class="saved-toolbar"><div><strong id="saved-count">0</strong> в списке</div><span id="saved-sync-label">Сохранено в этом браузере</span></div>
+            <div id="saved-grid" class="catalog-grid"></div>
+            <div id="saved-empty" class="empty-state hidden"><span>♡</span><h3>Пока здесь пусто</h3><p>Добавь понравившееся аниме из каталога — оно появится здесь.</p><button type="button" class="button button-primary" data-action="browse">Открыть каталог <span>↗</span></button></div>
+          </section>
+
+          <section id="profile-page" class="page hidden">
+            <div class="page-intro"><div class="section-kicker">ТВОЯ ИСТОРИЯ В ИСТОРИЯХ</div><h1>Профиль.</h1><p>Твой вкус, твои открытия, твой ритм.</p></div>
+            <div id="profile-content" class="profile-content"></div>
+          </section>
+
+        </main>
+
+        <footer class="footer"><div class="footer-brand">anime<span>top</span> <i>✦</i></div><p>Истории, которые остаются. Твой личный рейтинг и общий топ с друзьями.</p></footer>
+      </div>
+    </div>
+
+    <div id="detail-overlay" class="detail-overlay hidden" role="presentation">
+      <div class="detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+        <button type="button" id="detail-close" class="detail-close" aria-label="Закрыть карточку">×</button>
+        <div id="detail-content"></div>
+      </div>
+    </div>
+    <div id="auth-overlay" class="auth-overlay hidden" role="presentation">
+      <div class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <button type="button" id="auth-close" class="auth-close" aria-label="Закрыть">×</button>
+        <div class="auth-kicker">✦ ТВОЯ КОЛЛЕКЦИЯ ВСЕГДА С ТОБОЙ</div>
+        <h2 id="auth-title">Войти в Anime Top</h2>
+        <p class="auth-intro">Сохраняй аниме, прогресс и личные оценки в своём профиле.</p>
+        <button type="button" class="provider-button provider-telegram" data-provider="telegram"><span>✈</span> Продолжить через Telegram <small>нужна настройка</small></button>
+        <div class="provider-row"><button type="button" class="provider-button" data-provider="google">G <span>Google</span><small>нужна настройка</small></button><button type="button" class="provider-button" data-provider="yandex">Я <span>Яндекс</span><small>нужна настройка</small></button></div>
+        <p id="auth-provider-note" class="auth-provider-note">Вход через Telegram, Google и Яндекс пока не подключён. Сейчас можно зарегистрироваться по email.</p>
+        <div class="auth-divider"><span>или через email</span></div>
+        <form id="auth-form" autocomplete="on">
+          <label id="auth-name-wrap" class="auth-field hidden">Имя<input id="auth-name" name="name" type="text" minlength="2" maxlength="50" autocomplete="name" placeholder="Как тебя зовут"></label>
+          <label id="auth-email-wrap" class="auth-field">Email<input id="auth-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+          <label id="auth-password-wrap" class="auth-field">Пароль<input id="auth-password" name="password" type="password" minlength="10" maxlength="200" autocomplete="current-password" required placeholder="Не менее 10 символов"></label>
+          <p id="auth-error" class="auth-error hidden" role="alert"></p>
+          <p id="auth-info" class="auth-info hidden" role="status"></p>
+          <button type="submit" id="auth-submit" class="button button-primary auth-submit">Войти <span>↗</span></button>
+        </form>
+        <button type="button" id="auth-switch" class="auth-switch">Нет аккаунта? Зарегистрироваться</button>
+        <button type="button" id="auth-forgot" class="auth-switch">Забыл пароль?</button>
+        <button type="button" id="auth-resend" class="auth-switch hidden">Отправить письмо подтверждения ещё раз</button>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <aside id="assistant-widget" class="assistant-widget" aria-label="Помощница по подбору историй">
+      <button id="assistant-launch" class="assistant-launch" type="button" aria-label="Открыть чат с Мирой" aria-controls="assistant-panel" aria-expanded="false" title="Спросить Миру"><span class="mira-spark mira-spark-one" aria-hidden="true">✦</span><span class="mira-spark mira-spark-two" aria-hidden="true">✧</span></button>
+      <button id="assistant-quick-hide" class="assistant-quick-hide" type="button" aria-label="Скрыть Миру" title="Скрыть Миру">×</button>
+      <section id="assistant-panel" class="assistant-panel hidden" role="dialog" aria-label="Чат с Мирой">
+        <div class="assistant-head"><span class="assistant-head-avatar"><img class="mira-idle" src="./assistant-mira-idle-v4.png" alt="" /><img class="mira-wave" src="./assistant-mira-wave-v4.png" alt="" /></span><div><strong>Мира <span class="assistant-online" aria-label="В сети"></span></strong><small>Помогу выбрать историю</small></div><button id="assistant-minimize" type="button" aria-label="Свернуть чат">−</button><button id="assistant-hide" type="button" aria-label="Скрыть помощницу">×</button></div>
+        <div id="assistant-messages" class="assistant-messages" role="log" aria-live="polite"><p class="assistant-bubble">Привет! Расскажи, что хочется посмотреть. Например: «Герой очень сильный, есть юмор и немного романтики».</p></div>
+        <div class="assistant-suggestions"><button type="button" data-assistant-prompt="Сильный главный герой, магия и другой мир">Сильный герой</button><button type="button" data-assistant-prompt="Добрая романтика и комедия">Романтика</button><button type="button" data-assistant-prompt="Захватывающее приключение для всей семьи">Приключения</button></div>
+        <form id="assistant-form" class="assistant-form"><label class="sr-only" for="assistant-input">Опиши, что хочется посмотреть</label><input id="assistant-input" maxlength="500" placeholder="Опиши настроение или сюжет…" autocomplete="off" required /><button id="assistant-mic" type="button" aria-label="Сказать голосом" title="Сказать голосом">🎙</button><button id="assistant-send" type="submit" aria-label="Отправить запрос">➜</button></form>
+        <p id="assistant-status" class="assistant-status" role="status"></p>
+      </section>
+      <button id="assistant-restore" type="button" class="assistant-restore hidden" aria-label="Вернуть Миру" title="Вернуть Миру">✦</button>
+    </aside>
+  </body>
+</html>
+
