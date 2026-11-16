@@ -1,0 +1,53 @@
+name: KawaiiFlex
+options:
+  bundleIdPrefix: io.kawaiiflex
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+targets:
+  KawaiiFlex:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: KawaiiFlex
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        UIRequiresFullScreen: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.kawaiiflex.mobile
+        SWIFT_OBJC_BRIDGING_HEADER: Sources/KawaiiFlex-Bridging-Header.h
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - framework: Frameworks/TorrServerKit.xcframework
+        embed: false
+  KawaiiFlexTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: KawaiiFlex
+  KawaiiFlexUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: KawaiiFlex
+schemes:
+  KawaiiFlex:
+    build:
+      targets:
+        KawaiiFlex: all
+    test:
+      targets: [KawaiiFlexTests, KawaiiFlexUITests]

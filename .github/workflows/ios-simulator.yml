@@ -1,0 +1,63 @@
+name: Native iPhone simulator
+on:
+  push:
+    branches: [codex/ios-simulator-20261117]
+    paths: [ios/**, .github/workflows/ios-simulator.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ios-simulator-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  iphone:
+    runs-on: macos-15
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+      - name: Prepare Apple build tools
+        run: |
+          brew install xcodegen
+          command -v pod || brew install cocoapods
+          command -v yarn || npm install --global yarn@1.22.22
+      - name: Generate app icon
+        run: |
+          curl --fail --location https://kawaiiflex.103.118.210.148.sslip.io/app-icon-512.png -o ios/Sources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+          echo '26dfaa42115fab3da58a0967b3f7c583317d3c5999b3df98dfc3db0dbb19fd99  ios/Sources/Assets.xcassets/AppIcon.appiconset/AppIcon.png' | shasum -a 256 -c -
+          sips -z 1024 1024 ios/Sources/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+      - name: Build loopback-only torrent framework and Xcode workspace
+        run: bash ios/prepare-on-mac.sh
+      - name: Select iPhone simulator
+        run: |
+          xcrun simctl list devices available --json > /tmp/ios-devices.json
+          python3 - <<'PY'
+          import json, os
+          devices=json.load(open('/tmp/ios-devices.json'))['devices']
+          phone=next(d for runtime, rows in devices.items() if 'iOS' in runtime for d in rows if d['name'].startswith('iPhone'))
+          with open(os.environ['GITHUB_ENV'],'a') as out: out.write('IPHONE_UDID='+phone['udid']+'\n')
+          print('Native simulator:',phone['name'])
+          PY
+      - name: Compile and test native app
+        run: |
+          set -o pipefail
+          xcodebuild -workspace ios/KawaiiFlex.xcworkspace -scheme KawaiiFlex -destination "platform=iOS Simulator,id=$IPHONE_UDID" -derivedDataPath ios-derived -resultBundlePath ios-result.xcresult CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ios-build.log
+      - name: Capture running app
+        run: |
+          xcrun simctl launch "$IPHONE_UDID" io.kawaiiflex.mobile
+          sleep 15
+          xcrun simctl io "$IPHONE_UDID" screenshot ios-native-iphone.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-iphone-results
+          retention-days: 1
+          path: |
+            ios-build.log
+            ios-result.xcresult
+            ios-native-iphone.png
