@@ -67,7 +67,10 @@ struct RootView: View {
 struct PosterView: View {
     let item: TitleItem
     var body: some View { VStack(alignment:.leading,spacing:8) {
-        AsyncImage(url:URL(string:item.poster)) { image in image.resizable().scaledToFill() } placeholder:{RoundedRectangle(cornerRadius:14).fill(.white.opacity(0.06))}.frame(maxWidth:.infinity).aspectRatio(2/3,contentMode:.fit).clipped().clipShape(RoundedRectangle(cornerRadius:14))
+        GeometryReader { geometry in
+            AsyncImage(url:URL(string:item.poster)) { image in image.resizable().scaledToFill() } placeholder:{Color.white.opacity(0.06)}
+                .frame(width:geometry.size.width,height:geometry.size.height).clipped()
+        }.aspectRatio(2.0/3.0,contentMode:.fit).clipShape(RoundedRectangle(cornerRadius:14))
         Text(item.title).font(.subheadline.weight(.semibold)).lineLimit(2).multilineTextAlignment(.leading)
         Text([item.year.map(String.init),item.type].compactMap{$0}.joined(separator:" · ")).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
     } }
@@ -88,7 +91,7 @@ struct DetailView: View {
     private var episodes:[Int] { let row=seasons.first {($0["number"] as? Int)==season};let list=(row?["episodeList"] ?? row?["episodes"]) as? [[String:Any]];return list?.compactMap {$0["number"] as? Int}.filter {$0>0} ?? Array(1...12) }
     var body:some View { NavigationStack {
         ScrollView { VStack(alignment:.leading,spacing:20) {
-            HStack(alignment:.top,spacing:20) { PosterView(item:item).frame(width:120);VStack(alignment:.leading,spacing:12){Text(item.title).font(.title2.bold());Text(item.genres.prefix(5).joined(separator:" · ")).font(.caption).foregroundStyle(.secondary);Button("В коллекцию") {Task {await session.save(item)}}.buttonStyle(.bordered)} }
+            HStack(alignment:.top,spacing:20) { AsyncImage(url:URL(string:item.poster)){image in image.resizable().scaledToFill()}placeholder:{Color.white.opacity(0.06)}.frame(width:120,height:180).clipped().clipShape(RoundedRectangle(cornerRadius:14));VStack(alignment:.leading,spacing:12){Text(item.title).font(.title2.bold());Text([item.year.map(String.init),item.type].compactMap{$0}.joined(separator:" · ")).font(.caption).foregroundStyle(.secondary);Text(item.genres.prefix(5).joined(separator:" · ")).font(.caption).foregroundStyle(.secondary);Button("В коллекцию") {Task {await session.save(item)}}.buttonStyle(.bordered)} }
             Button(movie ? "Смотреть фильм" : "Смотреть") {start(season,1)}.buttonStyle(.borderedProminent).frame(maxWidth:.infinity)
             if let description=film["description"] as? String {Text(description).font(.subheadline).foregroundStyle(.secondary)}
             if !movie {
@@ -117,3 +120,4 @@ struct AccountWebView:UIViewRepresentable {
         func webView(_ view:WKWebView,decidePolicyFor action:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){guard let url=action.request.url else {decisionHandler(.cancel);return};if action.targetFrame?.isMainFrame != false && url.host != site.host {if ["https","tg"].contains(url.scheme ?? ""){UIApplication.shared.open(url)};decisionHandler(.cancel)}else{decisionHandler(["https","about"].contains(url.scheme ?? "") ? .allow:.cancel)}}
     }
 }
+
