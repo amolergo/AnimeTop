@@ -46,12 +46,23 @@ jobs:
       - name: Compile and test native app
         run: |
           set -o pipefail
-          xcodebuild -workspace ios/KawaiiFlex.xcworkspace -scheme KawaiiFlex -destination "platform=iOS Simulator,id=$IPHONE_UDID" -derivedDataPath ios-derived -resultBundlePath ios-result.xcresult CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ios-build.log
+          xcrun simctl boot "$IPHONE_UDID" || true
+          xcrun simctl bootstatus "$IPHONE_UDID" -b
+          xcodebuild -workspace ios/KawaiiFlex.xcworkspace -scheme KawaiiFlex -destination "platform=iOS Simulator,id=$IPHONE_UDID" -parallel-testing-enabled NO -derivedDataPath ios-derived -resultBundlePath ios-result.xcresult CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ios-build.log
       - name: Capture running app
         run: |
+          xcrun simctl boot "$IPHONE_UDID" || true
+          xcrun simctl bootstatus "$IPHONE_UDID" -b
+          xcrun simctl install "$IPHONE_UDID" ios-derived/Build/Products/Debug-iphonesimulator/KawaiiFlex.app
           xcrun simctl launch "$IPHONE_UDID" io.kawaiiflex.mobile
           sleep 15
           xcrun simctl io "$IPHONE_UDID" screenshot ios-native-iphone.png
+      - name: Export XCTest screenshots
+        if: always()
+        run: |
+          if [ -d ios-result.xcresult ]; then
+            xcrun xcresulttool export attachments --path ios-result.xcresult --output-path ios-test-attachments
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -61,3 +72,5 @@ jobs:
             ios-build.log
             ios-result.xcresult
             ios-native-iphone.png
+            ios-test-attachments
+
